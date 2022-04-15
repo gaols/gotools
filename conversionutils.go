@@ -11,9 +11,19 @@ func Str2Int(str string) (int, error) {
 	return strconv.Atoi(str)
 }
 
+// Str2Int64 convert string to int64.
+func Str2Int64(str string) (int64, error) {
+	return strconv.ParseInt(str, 10, 64)
+}
+
 // Int2Str convert int to string.
 func Int2Str(i int) string {
 	return strconv.Itoa(i)
+}
+
+// Int64ToStr convert int to string.
+func Int64ToStr(i int64) string {
+	return strconv.FormatInt(i, 10)
 }
 
 // ToInt convert string and any other int/float types to int.
