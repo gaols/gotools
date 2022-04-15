@@ -122,16 +122,18 @@ func (t *QTrace) Start(qpsPerIdLimit float64, qpsLimit float64) chan *QTraceEven
 			case <-traceIdTk.C:
 				if len(t.traceListeners) > 0 {
 					for id, idListeners := range t.traceListeners {
-						if v, ok := t.ids[id]; ok {
-							for _, l := range idListeners {
-								select {
-								case l.ListenerCh <- &QTraceOfId{
-									Q:   v / 10,
-									Qps: float64(v/10) / float64(winSize),
-								}:
-								default:
-									log.Printf("warning: trace event dropped, id: %s", id)
-								}
+						v, ok := t.ids[id]
+						if !ok {
+							v = 0
+						}
+						for _, l := range idListeners {
+							select {
+							case l.ListenerCh <- &QTraceOfId{
+								Q:   v / 10,
+								Qps: float64(v/10) / float64(winSize),
+							}:
+							default:
+								log.Printf("warning: trace event dropped, id: %s", id)
 							}
 						}
 					}
