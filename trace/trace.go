@@ -8,10 +8,12 @@ import (
 )
 
 type QTrace struct {
-	ids           map[string]uint64 // map ip to access count
-	TraceDuration time.Duration
-	TraceEntryCh  chan *QTraceEntry
-	totalQ        uint64
+	ids            map[string]uint64 // map ip to access count
+	TraceDuration  time.Duration
+	TraceEntryCh   chan *QTraceEntry
+	traceOfCh      chan *QTraceOfIdListener
+	traceListeners map[string][]*QTraceOfIdListener
+	totalQ         uint64
 	// total q of current trace duration window
 	winQ           uint64
 	win            *SlidingWindow
@@ -24,7 +26,8 @@ type QTrace struct {
 type QTraceEntry struct {
 	Id string
 	// trace event occurrence time, you can use time.unix() for this field
-	On     int64
+	On int64
+	// 传入的值应该是你希望的值乘以10，比如一次接口调用，这里应该传1*10
 	Weight int
 }
 
@@ -34,14 +37,26 @@ func (e *QTraceEntry) At() int64 {
 
 func NewQTrace(duration time.Duration) *QTrace {
 	return &QTrace{
-		ids:           make(map[string]uint64),
-		TraceDuration: duration,
-		TraceEntryCh:  make(chan *QTraceEntry, 100),
-		totalQ:        0,
-		win:           NewSlidingWindow(duration, time.Duration(0)),
-		expiredCh:     make(chan *QTraceEntry),
-		PeakWinQps:    -1,
+		ids:            make(map[string]uint64),
+		TraceDuration:  duration,
+		TraceEntryCh:   make(chan *QTraceEntry, 100),
+		traceListeners: make(map[string][]*QTraceOfIdListener),
+		traceOfCh:      make(chan *QTraceOfIdListener, 1),
+		totalQ:         0,
+		win:            NewSlidingWindow(duration, time.Duration(0)),
+		expiredCh:      make(chan *QTraceEntry),
+		PeakWinQps:     -1,
 	}
+}
+
+type QTraceOfId struct {
+	Q   uint64
+	Qps float64
+}
+
+type QTraceOfIdListener struct {
+	ListenerCh chan *QTraceOfId
+	Id         string
 }
 
 type QTraceEvent struct {
@@ -54,12 +69,19 @@ func (t *QTrace) Trace(entry *QTraceEntry) {
 	t.TraceEntryCh <- entry
 }
 
+func (t *QTrace) TraceOf(listener *QTraceOfIdListener) <-chan *QTraceOfId {
+	t.traceOfCh <- listener
+	return listener.ListenerCh
+}
+
 // Start q trace, winSize is the trace window size
 func (t *QTrace) Start(qpsPerIdLimit float64, qpsLimit float64) chan *QTraceEvent {
 	eventCh := make(chan *QTraceEvent, 2)
 	traceTk := time.NewTicker(time.Minute * 5)
+	traceIdTk := time.NewTicker(time.Second)
 	go func() {
 		defer traceTk.Stop()
+		defer traceIdTk.Stop()
 		winReady := false
 		winSize := int(t.TraceDuration.Seconds())
 		startTime := time.Now()
@@ -93,12 +115,33 @@ func (t *QTrace) Start(qpsPerIdLimit float64, qpsLimit float64) chan *QTraceEven
 				} else {
 					t.ids[e.Id] = v
 				}
+			case l := <-t.traceOfCh:
+				listeners := t.traceListeners[l.Id]
+				listeners = append(listeners, l)
+				t.traceListeners[l.Id] = listeners
+			case <-traceIdTk.C:
+				if len(t.traceListeners) > 0 {
+					for id, idListeners := range t.traceListeners {
+						if v, ok := t.ids[id]; ok {
+							for _, l := range idListeners {
+								select {
+								case l.ListenerCh <- &QTraceOfId{
+									Q:   v / 10,
+									Qps: float64(v/10) / float64(winSize),
+								}:
+								default:
+									log.Printf("warning: trace event dropped, id: %s", id)
+								}
+							}
+						}
+					}
+				}
 			case <-traceTk.C:
 				peakQpsTime := "-"
 				if t.PeakWinQps >= 0 {
 					peakQpsTime = gotools.MustFmtTime(t.PeakWinQpsTime, "-datetime")
 				}
-				log.Printf("[nginx] winQ/%dm: %d, totalQ: %d, peakWinQps/%dm: %.2f, peakQpsTime: %s", winSize/60, t.winQ/10, t.totalQ, winSize/60, t.PeakWinQps, peakQpsTime)
+				log.Printf("[QTrace] winQ/%dm: %d, totalQ: %d, peakWinQps/%dm: %.2f, peakQpsTime: %s", winSize/60, t.winQ/10, t.totalQ, winSize/60, t.PeakWinQps, peakQpsTime)
 			}
 		}
 	}()
