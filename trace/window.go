@@ -18,8 +18,6 @@ type TimePoint interface {
 	At() int64
 }
 
-// 需要特别注意的是，只有添加一个元素的时候，才会驱逐一个老的元素。
-// 如果想要主动驱逐元素，可以调用trim方法
 type SlidingWindow struct {
 	Period    time.Duration
 	Tolerance time.Duration
