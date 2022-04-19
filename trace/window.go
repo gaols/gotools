@@ -155,6 +155,9 @@ func (w *SlidingWindow) Clear() {
 func TrimWindow(w *SlidingWindow) []*WinEntry {
 	w.Locker.Lock()
 	defer w.Locker.Unlock()
+	if w.Head == nil {
+		return nil
+	}
 	ret := make([]*WinEntry, 0, 1)
 	p := w.Tail
 	oldestValid := time.Now().Unix() - int64((w.Period + w.Tolerance).Seconds()) + 1
