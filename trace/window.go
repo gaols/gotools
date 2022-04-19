@@ -66,13 +66,13 @@ func (w *SlidingWindow) HeadData() TimePoint {
 
 // Range return nil means no valid range to calc qps
 func (w *SlidingWindow) Range() []TimePoint {
-	if w.Head == nil {
-		return nil
-	}
 	pr := int64(w.Period.Seconds())
 	t := int64(w.Tolerance.Seconds())
 	w.Locker.Lock()
 	defer w.Locker.Unlock()
+	if w.Head == nil {
+		return nil
+	}
 	p := w.Tail
 	var minDiff = t
 	var minDiffPtr TimePoint
