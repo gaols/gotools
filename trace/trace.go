@@ -8,7 +8,8 @@ import (
 )
 
 type QTrace struct {
-	ids            map[string]uint64 // map ip to access count
+	// map id to access count, each id in this map will be traced on which qps can be then calculated
+	ids            map[string]uint64
 	TraceDuration  time.Duration
 	TraceEntryCh   chan *QTraceEntry
 	traceOfCh      chan *QTraceOfIdListener
@@ -25,7 +26,7 @@ type QTrace struct {
 
 type QTraceEntry struct {
 	Id string
-	// trace event occurrence time, you can use time.unix() for this field
+	// trace event occurrence time, you can use time.Now().Unix() for this field
 	On int64
 	// 传入的值应该是你希望的值乘以10，比如一次接口调用，这里应该传1*10
 	Weight int
