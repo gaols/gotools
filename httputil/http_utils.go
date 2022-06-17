@@ -33,13 +33,17 @@ type HttpCli struct {
 }
 
 func NewHttpCli() *HttpCli {
+	return NewHttpCli2(time.Second * 30)
+}
+
+func NewHttpCli2(d time.Duration) *HttpCli {
 	cli := &HttpCli{
 		Client: &http.Client{
 			Transport: gTransport,
 			CheckRedirect: func(req *http.Request, via []*http.Request) error {
 				return nil
 			},
-			Timeout: 30 * time.Second,
+			Timeout: d,
 		},
 	}
 	return cli
