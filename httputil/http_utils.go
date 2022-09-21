@@ -17,13 +17,13 @@ var gTransport *http.Transport
 func init() {
 	gTransport = &http.Transport{
 		MaxIdleConns:        2000,
-		IdleConnTimeout:     90 * time.Second,
-		TLSHandshakeTimeout: 15 * time.Second,
+		IdleConnTimeout:     2 * time.Minute,
+		TLSHandshakeTimeout: 10 * time.Second,
 		MaxIdleConnsPerHost: 50,
 		TLSClientConfig:     &tls.Config{InsecureSkipVerify: true},
 		DialContext: (&net.Dialer{
-			Timeout:   20 * time.Second,
-			KeepAlive: 30 * time.Second,
+			Timeout:   10 * time.Second,
+			KeepAlive: 15 * time.Second,
 		}).DialContext,
 	}
 }
