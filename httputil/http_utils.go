@@ -18,13 +18,9 @@ func init() {
 	gTransport = &http.Transport{
 		MaxIdleConns:        2000,
 		IdleConnTimeout:     2 * time.Minute,
-		TLSHandshakeTimeout: 10 * time.Second,
 		MaxIdleConnsPerHost: 50,
 		TLSClientConfig:     &tls.Config{InsecureSkipVerify: true},
-		DialContext: (&net.Dialer{
-			Timeout:   10 * time.Second,
-			KeepAlive: 15 * time.Second,
-		}).DialContext,
+		DialContext:         (&net.Dialer{}).DialContext,
 	}
 }
 
@@ -118,6 +114,7 @@ func GetStr(cli *http.Client, _url string, headers map[string]string) (string, e
 }
 
 func PostForm(cli *http.Client, _url string, headers map[string]string, form url.Values) ([]byte, error) {
+	applyFormHeader(headers)
 	req, err := http.NewRequest(http.MethodPost, _url, strings.NewReader(form.Encode()))
 	if err != nil {
 		return nil, fmt.Errorf("create request (%s) error: %w", _url, err)
@@ -126,9 +123,22 @@ func PostForm(cli *http.Client, _url string, headers map[string]string, form url
 }
 
 func PostJson(cli *http.Client, _url string, headers map[string]string, data string) ([]byte, error) {
+	applyJsonHeader(headers)
 	req, err := http.NewRequest(http.MethodPost, _url, strings.NewReader(data))
 	if err != nil {
 		return nil, fmt.Errorf("create request (%s) error: %w", _url, err)
 	}
 	return doReq(cli, _url, headers, req)
+}
+
+func applyJsonHeader(headers map[string]string) {
+	if v, ok := headers["Content-Type"]; !ok || strings.HasPrefix(v, "application/json") {
+		headers["Content-Type"] = "application/json"
+	}
+}
+
+func applyFormHeader(headers map[string]string) {
+	if v, ok := headers["Content-Type"]; !ok || v != "application/x-www-form-urlencoded" {
+		headers["Content-Type"] = "application/x-www-form-urlencoded"
+	}
 }
