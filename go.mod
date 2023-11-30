@@ -1,3 +1,3 @@
 module github.com/gaols/gotools
 
-go 1.14
+go 1.20

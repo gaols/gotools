@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 const (
@@ -18,12 +19,14 @@ const (
 // Local run the command in localhost
 // https://studygolang.com/articles/4004   <- run shell command and read output line by line
 // https://studygolang.com/articles/7767   <- run command without known args
-func Local(localCmd string, paras ...interface{}) (out string, err error) {
+func Local(localCmd string, paras ...interface{}) (string, error) {
 	localCmd = fmt.Sprintf(localCmd, paras...)
 	cmd := exec.Command("/bin/bash", "-c", localCmd)
 	ret, err := cmd.CombinedOutput()
-	out = string(ret)
-	return
+	if err != nil {
+		return "", err
+	}
+	return string(ret), nil
 }
 
 // RtLocal run the command in localhost and get command output realtime.
@@ -43,7 +46,6 @@ func RtLocal(localCmd string, lineHandler func(line string, lineType int8), para
 		return err
 	}
 
-	ch := make(chan int8)
 	go func() {
 		defer stdout.Close()
 		defer stderr.Close()
@@ -55,12 +57,9 @@ func RtLocal(localCmd string, lineHandler func(line string, lineType int8), para
 		for stderrScanner.Scan() {
 			lineHandler(stderrScanner.Text(), TypeStderr)
 		}
-		ch <- 1
 	}()
 
-	<-ch
-
-	return nil
+	return cmd.Wait()
 }
 
 // Tar pack the targetPath and put tarball to tgzPath, targetPath and tgzPath should both the absolute path.
@@ -87,4 +86,56 @@ func UnTar(tgzPath, targetPath string) error {
 
 	_, err := Local("tar xf %s -C %s", tgzPath, targetPath)
 	return err
+}
+
+type GrepConfig struct {
+	// 命中行上下文行数
+	Context                int
+	FromStart              bool
+	AlwaysIncludeFirstLine bool
+}
+
+// grep val from src, val cannot contain line break.
+// from start means if any match found, the first match will starting from the very start line.
+func Grep(src, val string, config *GrepConfig) []string {
+	vals := strings.Split(src, "\n")
+	if len(vals) == 0 {
+		return []string{""}
+	}
+
+	var pivots []int
+	for i, v := range vals {
+		if strings.Contains(v, val) {
+			pivots = append(pivots, i)
+		}
+	}
+	var lineIdx []int
+	if config.AlwaysIncludeFirstLine {
+		lineIdx = append(lineIdx, 0)
+	}
+	fromStart := config.FromStart
+	for _, p := range pivots {
+		s := p - config.Context
+		e := p + config.Context
+		if s < 0 {
+			s = 0
+		}
+		if e > len(vals)-1 {
+			e = len(vals) - 1
+		}
+		if fromStart {
+			s = 0
+			fromStart = false
+		}
+		for i := s; i <= e; i++ {
+			if !ContainsAnyInt(lineIdx, i) {
+				lineIdx = append(lineIdx, i)
+			}
+		}
+	}
+	var ret []string
+	for _, v := range lineIdx {
+		ret = append(ret, vals[v])
+	}
+	return ret
 }
