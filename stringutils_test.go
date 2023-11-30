@@ -53,79 +53,79 @@ func TestIsNotBlank(t *testing.T) {
 }
 
 func TestRightPad(t *testing.T) {
-	if "hello  " != RightPad("hello", 7, ' ') {
+	if RightPad("hello", 7, ' ') != "hello  " {
 		t.FailNow()
 	}
-	if "猴王王王王王王" != RightPad("猴王", 7, '王') {
+	if RightPad("猴王", 7, '王') != "猴王王王王王王" {
 		t.FailNow()
 	}
-	if "猴王     " != RightPad("猴王", 7, ' ') {
+	if RightPad("猴王", 7, ' ') != "猴王     " {
 		t.FailNow()
 	}
-	if "猴王" != RightPad("猴王", 2, ' ') {
+	if RightPad("猴王", 2, ' ') != "猴王" {
 		t.FailNow()
 	}
-	if "猴王" != RightPad("猴王", 1, ' ') {
+	if RightPad("猴王", 1, ' ') != "猴王" {
 		t.FailNow()
 	}
-	if "猴王" != RightPad("猴王", 0, ' ') {
+	if RightPad("猴王", 0, ' ') != "猴王" {
 		t.FailNow()
 	}
-	if "猴王" != RightPad("猴王", -1, ' ') {
+	if RightPad("猴王", -1, ' ') != "猴王" {
 		t.FailNow()
 	}
-	if "ab" != RightPad("ab", 2, ' ') {
+	if RightPad("ab", 2, ' ') != "ab" {
 		t.FailNow()
 	}
-	if "ab" != RightPad("ab", 1, ' ') {
+	if RightPad("ab", 1, ' ') != "ab" {
 		t.FailNow()
 	}
-	if "ab" != RightPad("ab", 0, ' ') {
+	if RightPad("ab", 0, ' ') != "ab" {
 		t.FailNow()
 	}
-	if "ab" != RightPad("ab", -1, ' ') {
+	if RightPad("ab", -1, ' ') != "ab" {
 		t.FailNow()
 	}
-	if "hello,猴王 强" != RightPad("hello,猴王 ", 10, '强') {
+	if RightPad("hello,猴王 ", 10, '强') != "hello,猴王 强" {
 		t.FailNow()
 	}
 }
 
 func TestLeftPad(t *testing.T) {
-	if "  hello" != LeftPad("hello", 7, ' ') {
+	if LeftPad("hello", 7, ' ') != "hello" {
 		t.FailNow()
 	}
-	if "王王王王王猴王" != LeftPad("猴王", 7, '王') {
+	if LeftPad("猴王", 7, '王') != "王王王王王猴王" {
 		t.FailNow()
 	}
-	if "     猴王" != LeftPad("猴王", 7, ' ') {
+	if LeftPad("猴王", 7, ' ') != "     猴王" {
 		t.FailNow()
 	}
-	if "猴王" != LeftPad("猴王", 2, ' ') {
+	if LeftPad("猴王", 2, ' ') != "猴王" {
 		t.FailNow()
 	}
-	if "猴王" != LeftPad("猴王", 1, ' ') {
+	if LeftPad("猴王", 1, ' ') != "猴王" {
 		t.FailNow()
 	}
-	if "猴王" != LeftPad("猴王", 0, ' ') {
+	if LeftPad("猴王", 0, ' ') != "猴王" {
 		t.FailNow()
 	}
-	if "猴王" != LeftPad("猴王", -1, ' ') {
+	if LeftPad("猴王", -1, ' ') != "猴王" {
 		t.FailNow()
 	}
-	if "ab" != LeftPad("ab", 2, ' ') {
+	if LeftPad("ab", 2, ' ') != "ab" {
 		t.FailNow()
 	}
-	if "ab" != LeftPad("ab", 1, ' ') {
+	if LeftPad("ab", 1, ' ') != "ab" {
 		t.FailNow()
 	}
-	if "ab" != LeftPad("ab", 0, ' ') {
+	if LeftPad("ab", 0, ' ') != "ab" {
 		t.FailNow()
 	}
-	if "ab" != LeftPad("ab", -1, ' ') {
+	if LeftPad("ab", -1, ' ') != "ab" {
 		t.FailNow()
 	}
-	if "强hello,猴王 " != LeftPad("hello,猴王 ", 10, '强') {
+	if LeftPad("hello,猴王 ", 10, '强') != "强hello,猴王 " {
 		t.FailNow()
 	}
 }

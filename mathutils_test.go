@@ -5,22 +5,22 @@ import (
 )
 
 func Test_SumInt(t *testing.T) {
-	if 0 != SumInt() {
+	if SumInt() != 0 {
 		t.FailNow()
 	}
-	if 10 != SumInt(1, 8, 1) {
+	if SumInt(1, 8, 1) != 10 {
 		t.FailNow()
 	}
 }
 
 func Test_SumIntSlice(t *testing.T) {
-	if 0 != SumIntSlice(nil) {
+	if SumIntSlice(nil) != 0 {
 		t.FailNow()
 	}
-	if 0 != SumIntSlice([]int{}) {
+	if SumIntSlice([]int{}) != 0 {
 		t.FailNow()
 	}
-	if 10 != SumIntSlice([]int{1, 8, 1}) {
+	if SumIntSlice([]int{1, 8, 1}) != 10 {
 		t.FailNow()
 	}
 }
