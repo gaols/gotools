@@ -68,28 +68,28 @@ func TestDaysBetween(t *testing.T) {
 }
 
 func Test_BeginningOfWeek(t *testing.T) {
-	if "2019-07-22" != MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-22", "-date")), "-date") {
+	if MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-22", "-date")), "-date") != "2019-07-22" {
 		t.FailNow()
 	}
-	if "2019-07-22" != MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-23", "-date")), "-date") {
+	if MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-23", "-date")), "-date") != "2019-07-22" {
 		t.FailNow()
 	}
-	if "2019-07-22" != MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-24", "-date")), "-date") {
+	if MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-24", "-date")), "-date") != "2019-07-22" {
 		t.FailNow()
 	}
-	if "2019-07-22" != MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-25", "-date")), "-date") {
+	if MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-25", "-date")), "-date") != "2019-07-22" {
 		t.FailNow()
 	}
-	if "2019-07-22" != MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-26", "-date")), "-date") {
+	if MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-26", "-date")), "-date") != "2019-07-22" {
 		t.FailNow()
 	}
-	if "2019-07-22" != MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-27", "-date")), "-date") {
+	if MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-27", "-date")), "-date") != "2019-07-22" {
 		t.FailNow()
 	}
-	if "2019-07-22" != MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-28", "-date")), "-date") {
+	if MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-28", "-date")), "-date") != "2019-07-22" {
 		t.FailNow()
 	}
-	if "2019-07-15" != MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-21", "-date")), "-date") {
+	if MustFmtTime(BeginningOfWeek(MustParseLocaltime("2019-07-21", "-date")), "-date") != "2019-07-15" {
 		t.FailNow()
 	}
 }
