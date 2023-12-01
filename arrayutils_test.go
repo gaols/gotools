@@ -58,3 +58,18 @@ func Test_ContainsAnyInt(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+type MyInt int;
+
+func Test_Contains(t *testing.T) {
+	AssertTrue(t, Contains[int]([]int {1, 2}, 1))
+	AssertTrue(t, Contains[MyInt]([]MyInt {1, 2}, 1))
+	AssertTrue(t, Contains[int8]([]int8 {1, 2}, 1))
+	AssertTrue(t, Contains[string]([]string {"1", "2"}, "1"))
+}
+
+func AssertTrue(t *testing.T, x bool) {
+	if !x{
+		t.FailNow()		
+	}
+}

@@ -65,3 +65,21 @@ func ContainsAnyIntFunc(arr []int, f func(int) bool) bool {
 
 	return false
 }
+
+func Contains[T comparable](arr []T, val T) bool {
+	for _, v := range arr {
+		if v == val {
+			return true
+		}
+	}
+	return false
+}
+
+func ContainsFunc[T comparable](arr []T, f func(T) bool) bool {
+	for _, v := range arr {
+		if f(v) {
+			return true
+		}		
+	}	
+	return false
+}
