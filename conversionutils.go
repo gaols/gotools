@@ -29,15 +29,33 @@ func Int64ToStr(i int64) string {
 // ToInt convert string and any other int/float types to int.
 // Warning: the result my be truncated if number overflows int.
 func ToInt(v interface{}) (int, error) {
-	switch v.(type) {
+	switch val := v.(type) {
 	case string:
-		return Str2Int(v.(string))
-	case int, int8, int16, int32, int64:
-		return int(reflect.ValueOf(v).Int()), nil
-	case uint, uint8, uint16, uint32, uint64:
-		return int(reflect.ValueOf(v).Uint()), nil
-	case float32, float64:
-		return int(reflect.ValueOf(v).Float()), nil
+		return Str2Int(val)
+	case int:
+		return val, nil
+	case int8:
+		return int(val), nil
+	case int16:
+		return int(val), nil
+	case int32:
+		return int(val), nil
+	case int64:
+		return int(val), nil
+	case uint:
+		return int(val), nil
+	case uint8:
+		return int(val), nil
+	case uint16:
+		return int(val), nil
+	case uint32:
+		return int(val), nil
+	case uint64:
+		return int(val), nil
+	case float32:
+		return int(val), nil
+	case float64:
+		return int(val), nil
 	}
 
 	return -1, fmt.Errorf("cannot parse value: %v", v)
